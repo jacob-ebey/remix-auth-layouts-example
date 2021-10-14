@@ -1,0 +1,13 @@
+version: "3"
+services:
+  database:
+    image: "postgres"
+    restart: always
+    volumes:
+      - ./.cache/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=johndoe
+      - POSTGRES_PASSWORD=randompassword
+      - POSTGRES_DB=example_db
+    ports:
+      - "5432:5432"

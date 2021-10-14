@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "name": "remix-app-template",
+  "description": "",
+  "license": "",
+  "scripts": {
+    "postinstall": "remix setup node",
+    "build:remix": "remix build",
+    "build:tailwind": "tailwindcss -o app/styles/tailwind.css",
+    "build": "run-s build:tailwind build:remix",
+    "dev:remix": "dotenv remix run",
+    "dev:tailwind": "tailwindcss -o app/styles/tailwind.css --watch",
+    "dev": "npm run build:tailwind && run-p dev:*",
+    "start": "remix-serve build"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.2.1",
+    "@remix-run/react": "^0.19.2",
+    "@remix-run/serve": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "classnames": "^2.3.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "6.0.0-beta.6",
+    "remix": "^0.19.2"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^0.19.2",
+    "@tailwindcss/typography": "^0.4.1",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/react": "^17.0.24",
+    "@types/react-dom": "^17.0.9",
+    "daisyui": "^1.14.4",
+    "dotenv-cli": "^4.0.0",
+    "npm-run-all": "^4.1.5",
+    "prisma": "^3.2.1",
+    "tailwindcss": "^2.2.17",
+    "typescript": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "sideEffects": false
+}
