@@ -22,7 +22,6 @@ RUN npm install --production=false
 # install only production modules
 FROM deps as production-deps
 
-RUN mkdir /app/
 WORKDIR /app/
 
 RUN npm prune --production=true
@@ -30,7 +29,6 @@ RUN npm prune --production=true
 ## build the app
 FROM deps as build
 
-RUN mkdir /app/
 WORKDIR /app/
 
 ADD . .
