@@ -9,8 +9,9 @@ import {
 import { useLocation } from "react-router-dom";
 import cn from "classnames";
 
+import prisma from "~/libs/prisma.server";
+
 import { authSession } from "~/sessions.server";
-import prisma from "~/prisma.server";
 import { signup } from "~/utils/auth.server";
 
 export let meta: MetaFunction = () => {

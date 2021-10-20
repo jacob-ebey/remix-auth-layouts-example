@@ -1,27 +1,17 @@
-import type {
-  ActionFunction,
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "remix";
+import type { ActionFunction, LoaderFunction, MetaFunction } from "remix";
 import { Form, json, useActionData, useLoaderData, useTransition } from "remix";
 import cn from "classnames";
 
-import stylesUrl from "~/styles/index.css";
+import prisma from "~/libs/prisma.server";
 
 import type { User } from "~/utils/auth.server";
-import { loadUser, parserUserId } from "~/utils/auth.server";
-import prisma from "~/prisma.server";
+import { requireUser, requireUserId } from "~/utils/auth.server";
 
 export let meta: MetaFunction = () => {
   return {
     title: "Profile",
     description: "View your profile!",
   };
-};
-
-export let links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: stylesUrl }];
 };
 
 type ProfileLoaderData = {
@@ -31,7 +21,7 @@ type ProfileLoaderData = {
 export let loader: LoaderFunction = async ({
   request,
 }): Promise<ProfileLoaderData> => {
-  let user = await loadUser(
+  let user = await requireUser(
     request.headers.get("Cookie"),
     "/login?redirect=/profile"
   );
@@ -45,9 +35,10 @@ type ProfileActionData = {
 };
 
 export let action: ActionFunction = async ({ request }) => {
-  let userId = await parserUserId(
+  let url = new URL(request.url);
+  let userId = await requireUserId(
     request.headers.get("Cookie"),
-    "/login?redirect=/profile"
+    `/login?redirect=${url.pathname}`
   );
 
   let formData = new URLSearchParams(await request.text());

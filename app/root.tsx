@@ -9,13 +9,16 @@ import {
 } from "remix";
 import { Link, Outlet } from "react-router-dom";
 
+import type { ILineItems } from "./commerce-provider";
+
+import { cartSession, CartSessionKeys } from "./sessions.server";
+import { requireUserId } from "./utils/auth.server";
+
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
 
 import globalStylesUrl from "./styles/global.css";
 import tailwindStylesUrl from "./styles/tailwind.css";
-
-import { parserUserId } from "./utils/auth.server";
 
 export let meta: MetaFunction = () => {
   return {
@@ -25,16 +28,27 @@ export let meta: MetaFunction = () => {
 };
 
 type RootLoaderData = {
-  year: string;
+  cartCount: number;
   loggedIn: boolean;
+  year: string;
 };
 
 export let loader: LoaderFunction = async ({
   request,
 }): Promise<RootLoaderData> => {
-  let userId = await parserUserId(request.headers.get("Cookie"));
+  let [userId, session] = await Promise.all([
+    requireUserId(request.headers.get("Cookie")),
+    cartSession.getSession(request.headers.get("Cookie")),
+  ]);
+
+  let lineItems: ILineItems = session.get(CartSessionKeys.lineItems) || {};
+  let cartCount = Object.values(lineItems).reduce(
+    (count, num) => count + num,
+    0
+  );
 
   return {
+    cartCount,
     loggedIn: !!userId,
     year: new Date().getFullYear().toString(),
   };
@@ -48,10 +62,10 @@ function Document({
   title?: string;
 }) {
   return (
-    <html lang="en" data-theme="synthwave">
+    <html lang="en" data-theme="light">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/favicon.png" type="image/png" />
         {title ? <title>{title}</title> : null}
         <Meta />
@@ -73,8 +87,10 @@ export default function App() {
 
   return (
     <Document>
-      <Navbar loggedIn={loaderData.loggedIn} />
+      <Navbar cartCount={loaderData.cartCount} loggedIn={loaderData.loggedIn} />
+
       <Outlet />
+
       <Footer year={loaderData.year} />
     </Document>
   );
@@ -88,7 +104,8 @@ export function CatchBoundary() {
     case 404:
       return (
         <Document title={`${caught.status} ${caught.statusText}`}>
-          <Navbar />
+          <Navbar cartCount={0} />
+
           <div className="hero min-h-screen bg-base-200">
             <div className="text-center hero-content">
               <div className="max-w-md">
@@ -119,7 +136,8 @@ export function ErrorBoundary({ error }: { error: Error }) {
 
   return (
     <Document title="Uh-oh!">
-      <Navbar className="bg-error" />
+      <Navbar cartCount={0} className="bg-error" />
+
       <div className="hero min-h-screen bg-error">
         <div className="text-center hero-content">
           <div className="max-w-md">

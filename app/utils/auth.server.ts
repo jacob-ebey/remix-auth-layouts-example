@@ -3,20 +3,20 @@ import { compare as comparePassword, hash as hashPassword } from "bcryptjs";
 
 import type { User as PrismaUser } from "@prisma/client";
 
-import prisma from "~/prisma.server";
+import prisma from "~/libs/prisma.server";
 import { authSession } from "~/sessions.server";
 
-export async function parserUserId(
+export async function requireUserId(
   cookieHeader: string | null | undefined
 ): Promise<string | null>;
 /**
  * @throws Will throw a redirect response if the userId is not avaliable
  */
-export async function parserUserId(
+export async function requireUserId(
   cookieHeader: string | null | undefined,
   redirectToIfNotAvaliable: string
 ): Promise<string>;
-export async function parserUserId(
+export async function requireUserId(
   cookieHeader: string | null | undefined,
   redirectToIfNotAvaliable?: string
 ): Promise<string | null> {
@@ -54,21 +54,21 @@ function cleanupUser<
   } as unknown as TResult;
 }
 
-export async function loadUser(
+export async function requireUser(
   cookieHeader: string | null | undefined
 ): Promise<User | null>;
 /**
  * @throws Will throw a redirect response if the user is not avaliable
  */
-export async function loadUser(
+export async function requireUser(
   cookieHeader: string | null | undefined,
   redirectToIfNotAvaliable: string
 ): Promise<User>;
-export async function loadUser(
+export async function requireUser(
   cookieHeader: string | null | undefined,
   redirectToIfNotAvaliable?: string
 ): Promise<User | null> {
-  let userId = await parserUserId(
+  let userId = await requireUserId(
     cookieHeader,
     redirectToIfNotAvaliable as never
   );
