@@ -15,6 +15,7 @@ RUN apk add --update npm
 RUN mkdir /app/
 WORKDIR /app/
 
+ADD prisma .
 ADD package.json package-lock.json .npmrc ./
 RUN npm install --production=false
 
@@ -23,9 +24,6 @@ FROM deps as production-deps
 
 RUN mkdir /app/
 WORKDIR /app/
-
-ADD prisma .
-RUN npx prisma generate
 
 RUN npm prune --production=true
 
