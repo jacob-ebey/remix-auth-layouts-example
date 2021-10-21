@@ -12,7 +12,7 @@ import {
   MoneyV2,
   ProductDetailsQuery,
   ProductDetailsQueryVariables,
-} from "~/graphql/shopify";
+} from "./graphql/shopify";
 
 import type { ICommerceProvider, IMoneyRange, ICartLineItem } from "./index";
 

@@ -7,11 +7,10 @@
     "postinstall": "run-s setup:*",
     "setup:prisma": "prisma generate",
     "setup:remix": "remix setup node",
-    "ci": "run-p build typecheck",
-    "build:server": "node ./scripts/build-server.js",
     "build:remix": "remix build",
     "build:tailwind": "tailwindcss -o app/styles/tailwind.css",
     "build:frontend": "run-s build:tailwind build:remix",
+    "build:server": "node ./scripts/build-server.js",
     "build": "run-p build:server build:frontend",
     "typecheck": "tsc --noEmit",
     "dev:server": "dotenv ts-node ./server.ts",
@@ -22,7 +21,7 @@
     "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
-    "@prisma/client": "^3.2.1",
+    "@prisma/client": "^3.3.0",
     "@remix-run/express": "^0.19.2",
     "@remix-run/react": "^0.19.2",
     "bcryptjs": "^2.4.3",
@@ -31,6 +30,7 @@
     "dinero.js": "^1.9.1",
     "express": "^4.17.1",
     "parse-cache-control": "^1.0.1",
+    "prisma": "^3.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "6.0.0-beta.6",
@@ -39,9 +39,9 @@
     "ts-node": "^9.1.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^1.9.0",
-    "@graphql-codegen/typescript": "2.2.4",
-    "@graphql-codegen/typescript-operations": "2.1.8",
+    "@graphql-codegen/cli": "^2.2.1",
+    "@graphql-codegen/typescript": "^2.2.4",
+    "@graphql-codegen/typescript-operations": "^2.1.8",
     "@remix-run/dev": "^0.19.2",
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@tailwindcss/typography": "^0.4.1",
@@ -57,13 +57,11 @@
     "esbuild": "^0.12.29",
     "esbuild-node-externals": "^1.3.0",
     "npm-run-all": "^4.1.5",
-    "prisma": "^3.2.1",
-    "rehype-highlight": "^5.0.0",
     "tailwindcss": "^2.2.17",
     "typescript": "^4.1.2"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "sideEffects": false
 }

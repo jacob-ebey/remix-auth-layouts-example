@@ -1,10 +1,8 @@
 import { IMoney, IMoneyRange } from "commerce-provider";
 
-import { CurrencyCode } from "~/graphql/shopify";
-
-let currencyMap: Map<CurrencyCode | string, [string, number]> = new Map([
-  [CurrencyCode.Cad, ["$", 2]],
-  [CurrencyCode.Usd, ["$", 2]],
+let currencyMap: Map<string, [string, number]> = new Map([
+  ["CAD", ["$", 2]],
+  ["USD", ["$", 2]],
 ]);
 
 export function formatPrice(price: IMoney, symbol: boolean = true) {
