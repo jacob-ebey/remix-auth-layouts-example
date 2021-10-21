@@ -3,8 +3,9 @@ import express from "express";
 import compression from "compression";
 import { createRequestHandler } from "@remix-run/express";
 
+import createShopifyProvider from "./commerce-provider/shopify";
+
 import { RequestContext } from "./app/context.server";
-import createShopifyProvider from "./app/commerce-provider/shopify";
 
 const MODE = process.env.NODE_ENV;
 const BUILD_DIR = path.join(process.cwd(), "build");

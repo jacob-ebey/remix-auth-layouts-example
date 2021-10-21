@@ -1,4 +1,5 @@
-import { IMoney, IMoneyRange } from "~/commerce-provider";
+import { IMoney, IMoneyRange } from "commerce-provider";
+
 import { CurrencyCode } from "~/graphql/shopify";
 
 let currencyMap: Map<CurrencyCode | string, [string, number]> = new Map([

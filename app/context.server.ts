@@ -1,4 +1,4 @@
-import type { ICommerceProvider } from "./commerce-provider";
+import type { ICommerceProvider } from "commerce-provider";
 
 export interface RequestContext {
   commerce: ICommerceProvider;

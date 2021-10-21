@@ -2,10 +2,11 @@ import type { HeadersFunction, LoaderFunction } from "remix";
 import { json, useLoaderData } from "remix";
 import { Link } from "react-router-dom";
 
-import { IProduct } from "~/commerce-provider";
-import { formatPriceRange } from "~/utils/format";
+import type { IProduct } from "commerce-provider";
 
 import type { RequestContext } from "~/context.server";
+import { formatPriceRange } from "~/utils/format";
+
 import type { ProductCardProps } from "~/components/product-card";
 import ProductCard from "~/components/product-card";
 

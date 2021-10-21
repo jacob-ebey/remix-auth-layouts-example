@@ -1,6 +1,7 @@
-FROM alpine as base
+FROM node:16-bullseye-slim as base
 
-RUN apk add --update nodejs
+# install open ssl for prisma
+RUN apt-get update && apt-get install -y openssl 
 
 ENV NODE_ENV=production
 
@@ -9,8 +10,6 @@ ENV REMIX_TOKEN=$REMIX_TOKEN
 
 # install all node_modules, including dev
 FROM base as deps
-
-RUN apk add --update npm
 
 RUN mkdir /app/
 WORKDIR /app/
@@ -34,14 +33,15 @@ WORKDIR /app/
 ADD . .
 RUN npm run build
 
+## copy over assets required to run the app
 FROM base
 
 RUN mkdir /app/
 WORKDIR /app/
 
 COPY --from=production-deps /app/node_modules /app/node_modules
-COPY --from=build /app/server.ts /app/server.ts
+COPY --from=build /app/server.js /app/server.js
 COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
 
-CMD ["npm", "start"]
+CMD ["node", "./server.js"]

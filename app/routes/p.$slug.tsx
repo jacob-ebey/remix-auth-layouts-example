@@ -5,7 +5,7 @@ import { Location, To } from "history";
 import { useLocation } from "react-router-dom";
 import cn from "classnames";
 
-import type { IProductDetails, ISelectedOption } from "~/commerce-provider";
+import type { IProductDetails, ISelectedOption } from "commerce-provider";
 
 import type { RequestContext } from "~/context.server";
 import { formatPrice, formatPriceRange } from "~/utils/format";

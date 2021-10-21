@@ -2,7 +2,8 @@ import type { LoaderFunction } from "remix";
 import { json, useCatch, useLoaderData } from "remix";
 import { Link } from "react-router-dom";
 
-import type { ICart } from "~/commerce-provider";
+import type { ICart } from "commerce-provider";
+
 import { RequestContext } from "~/context.server";
 import { cartSession, CartSessionKeys } from "~/sessions.server";
 import { formatPrice } from "~/utils/format";

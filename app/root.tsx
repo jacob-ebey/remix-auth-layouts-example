@@ -9,7 +9,7 @@ import {
 } from "remix";
 import { Link, Outlet } from "react-router-dom";
 
-import type { ILineItems } from "./commerce-provider";
+import type { ILineItems } from "commerce-provider";
 
 import { cartSession, CartSessionKeys } from "./sessions.server";
 import { requireUserId } from "./utils/auth.server";

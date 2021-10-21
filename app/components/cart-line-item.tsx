@@ -2,8 +2,7 @@ import { useMemo, useRef } from "react";
 import { Form, useSubmit, useTransition } from "remix";
 import { Link } from "react-router-dom";
 
-import type { ISelectedOption } from "~/commerce-provider";
-import { formatPrice } from "~/utils/format";
+import type { ISelectedOption } from "commerce-provider";
 
 export interface CartLineItemProps {
   image: string;

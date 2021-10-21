@@ -8,7 +8,9 @@
     "target": "ES2019",
     "strict": true,
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "commerce-provider": ["./commerce-provider/index"],
+      "commerce-provider/*": ["./commerce-provider/*"]
     },
 
     // Remix takes care of building everything in `remix build`.
