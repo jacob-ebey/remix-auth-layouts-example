@@ -7,8 +7,6 @@ env:
 jobs:
   typecheck:
     name: ʦ TypeScript
-    needs: [changes]
-    if: needs.changes.outputs.DEPLOYABLE == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: 🛑 Cancel Previous Runs
