@@ -39,6 +39,8 @@ FROM base
 RUN mkdir /app/
 WORKDIR /app/
 
+ADD prisma .
+
 COPY --from=production-deps /app/node_modules /app/node_modules
 COPY --from=build /app/server.js /app/server.js
 COPY --from=build /app/build /app/build

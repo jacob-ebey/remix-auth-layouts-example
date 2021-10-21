@@ -7,7 +7,7 @@ declare global {
 let redis = (global.redisClient =
   global.redisClient ||
   createClient({
-    url: process.env.REDIS_URL,
+    url: process.env.REDIS_URL || process.env.FLY_REDIS_CACHE_URL,
   }));
 
 export default redis;
