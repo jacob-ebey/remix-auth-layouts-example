@@ -16,8 +16,8 @@
     "dev:server": "dotenv ts-eager ./server.ts",
     "dev:remix": "dotenv remix watch",
     "dev:tailwind": "tailwindcss -o app/styles/tailwind.css --watch",
-    "dev": "npm run build && run-p dev:*",
-    "dev-quick": "run-p dev:*",
+    "dev": "dotenv npm run build && dotenv run-p dev:*",
+    "dev-quick": "dotenv run-p dev:*",
     "start": "node ./server.js",
     "codegen": "graphql-codegen --config codegen.yml"
   },

@@ -31,19 +31,18 @@ function getLoadContext(): RequestContext {
   };
 }
 
-let cacheStore: StaleWhileRevalidateStore = {
+let swrStore: StaleWhileRevalidateStore = {
   async del(key) {
     await new Promise<void>((resolve, reject) => {
-      redis.del(key, (err) => {
+      redis.del("swr-" + key, (err) => {
         if (err) reject(err);
         else resolve();
       });
     });
   },
   get(key) {
-    console.log({ key });
     return new Promise<string | null>((resolve, reject) => {
-      redis.get(key, (err, value) => {
+      redis.get("swr-" + key, (err, value) => {
         if (err) reject(err);
         else resolve(value);
       });
@@ -51,7 +50,7 @@ let cacheStore: StaleWhileRevalidateStore = {
   },
   async set(key, value, maxAge) {
     await new Promise<void>((resolve, reject) => {
-      redis.set(key, value, "EX", maxAge * 2, (err) => {
+      redis.set("swr-" + key, value, "EX", maxAge * 2, (err) => {
         if (err) reject(err);
         else resolve();
       });
@@ -65,7 +64,7 @@ app.all(
     ? createSwrRequestHandler({
         build: require("./build"),
         getLoadContext,
-        store: cacheStore,
+        store: swrStore,
       })
     : (req, res, next) => {
         purgeRequireCache();
@@ -74,7 +73,7 @@ app.all(
           build,
           getLoadContext,
           mode: MODE,
-          store: cacheStore,
+          store: swrStore,
         })(req, res, next);
       }
 );

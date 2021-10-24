@@ -32,7 +32,7 @@ export default function Navbar({
     >
       <div className="flex-1 px-2 mx-2">
         <Link to="/" className="text-lg font-bold">
-          Remix Auth
+          Remix Ecomm
         </Link>
       </div>
       {loggedIn ? (

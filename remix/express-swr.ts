@@ -1,7 +1,6 @@
 // polyfill globals
 import "@remix-run/express";
 
-import { PassThrough } from "stream";
 import type * as express from "express";
 import type {
   AppLoadContext,
@@ -12,13 +11,13 @@ import { createRequestHandler as createRemixRequestHandler } from "@remix-run/se
 import type { ServerRoute } from "@remix-run/server-runtime/routes";
 import { createRoutes } from "@remix-run/server-runtime/routes";
 import { matchServerRoutes } from "@remix-run/server-runtime/routeMatching";
-import type { RequestInit as NodeRequestInit } from "@remix-run/node";
+
 import {
   Headers as NodeHeaders,
-  Request as NodeRequest,
   Response as NodeResponse,
   formatServerError,
 } from "@remix-run/node";
+import { createRemixRequest } from "@remix-run/express/server";
 import parseCacheControlHeader from "parse-cache-control";
 
 declare module "parse-cache-control" {
@@ -231,42 +230,6 @@ export function createSwrRequestHandler({
       next(error);
     }
   };
-}
-
-export function createRemixHeaders(
-  requestHeaders: express.Request["headers"]
-): NodeHeaders {
-  let headers = new NodeHeaders();
-
-  for (let [key, values] of Object.entries(requestHeaders)) {
-    if (values) {
-      if (Array.isArray(values)) {
-        for (const value of values) {
-          headers.append(key, value);
-        }
-      } else {
-        headers.set(key, values);
-      }
-    }
-  }
-
-  return headers;
-}
-
-export function createRemixRequest(req: express.Request): NodeRequest {
-  let origin = `${req.protocol}://${req.get("host")}`;
-  let url = new URL(req.url, origin);
-
-  let init: NodeRequestInit = {
-    method: req.method,
-    headers: createRemixHeaders(req.headers),
-  };
-
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    init.body = req.pipe(new PassThrough({ highWaterMark: 16384 }));
-  }
-
-  return new NodeRequest(url.toString(), init);
 }
 
 function sendRemixResponse(

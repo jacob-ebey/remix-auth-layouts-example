@@ -56,11 +56,14 @@ export default function Index() {
       <section className="hero min-h-screen bg-base-200">
         <div className="text-center hero-content">
           <div className="max-w-md">
-            <h1 className="mb-5 text-5xl font-bold">Welcome to Remix!</h1>
+            <h1 className="mb-5 text-5xl font-bold">
+              Welcome to a Remix ecommerce example
+            </h1>
             <p className="mb-5">
-              This is an example on how you can implement an awesome login flow.{" "}
+              This is an example on how you can implement an blazing fast
+              ecommerce experience with your favorite APIs.{" "}
               <a className="underline" href="https://docs.remix.run">
-                Check out the Remix docs
+                Check out the docs
               </a>{" "}
               to learn more about Remix.
             </p>
@@ -73,6 +76,9 @@ export default function Index() {
               </Link>
               <Link to="profile" className="btn btn-warning">
                 Profile
+              </Link>
+              <Link to="admin/cache-segments" className="btn btn-success">
+                Cache Segments
               </Link>
             </p>
           </div>
