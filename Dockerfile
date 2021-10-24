@@ -15,6 +15,7 @@ RUN mkdir /app/
 WORKDIR /app/
 
 ADD prisma .
+ADD patches .
 ADD package.json package-lock.json .npmrc ./
 RUN npm install --production=false
 
