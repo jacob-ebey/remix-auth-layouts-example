@@ -22,6 +22,10 @@ type CacheSegmentsLoaderData = {
   selectedVersion?: string;
 };
 
+export let headers = () => ({
+  "Cache-Control": "no-store",
+});
+
 export let loader: LoaderFunction = async ({ request }) => {
   let url = new URL(request.url);
   let selectedVersion = url.searchParams.get("version") || undefined;
@@ -32,8 +36,6 @@ export let loader: LoaderFunction = async ({ request }) => {
       else resolve(keys);
     });
   });
-
-  console.log(keys);
 
   let appsMap = new Map<string, number>();
   let documentSegmentsMap = selectedVersion

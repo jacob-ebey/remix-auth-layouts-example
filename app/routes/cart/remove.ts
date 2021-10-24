@@ -11,8 +11,6 @@ export let action: ActionFunction = async ({ request }) => {
   let productVariantId = formValues.get("productVariantId");
   let needsDelete = false;
 
-  console.log(productVariantId);
-
   if (productVariantId) {
     let { [productVariantId]: _, ...lineItems }: Record<string, number> =
       session.get(CartSessionKeys.lineItems) || {};

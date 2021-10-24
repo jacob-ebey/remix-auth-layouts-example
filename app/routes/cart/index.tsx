@@ -1,4 +1,4 @@
-import type { LoaderFunction } from "remix";
+import type { HeadersFunction, LoaderFunction } from "remix";
 import { json, useCatch, useLoaderData } from "remix";
 import { Link } from "react-router-dom";
 
@@ -63,6 +63,8 @@ export let loader: LoaderFunction = async ({ context, request }) => {
     },
   });
 };
+
+export let headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders;
 
 export default function Cart() {
   let { addToCartError, updateCartError, cart } =

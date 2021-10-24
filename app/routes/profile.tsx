@@ -1,4 +1,9 @@
-import type { ActionFunction, LoaderFunction, MetaFunction } from "remix";
+import type {
+  ActionFunction,
+  HeadersFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "remix";
 import { Form, json, useActionData, useLoaderData, useTransition } from "remix";
 import cn from "classnames";
 
@@ -18,16 +23,22 @@ type ProfileLoaderData = {
   user: User;
 };
 
-export let loader: LoaderFunction = async ({
-  request,
-}): Promise<ProfileLoaderData> => {
+export let loader: LoaderFunction = async ({ request }) => {
   let user = await requireUser(
     request.headers.get("Cookie"),
     "/login?redirect=/profile"
   );
 
-  return { user };
+  let result: ProfileLoaderData = { user };
+
+  return json(result, {
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
 };
+
+export let headers: HeadersFunction = ({ loaderHeaders }) => loaderHeaders;
 
 type ProfileActionData = {
   firstName?: string;
