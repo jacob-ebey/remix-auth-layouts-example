@@ -1,0 +1,13 @@
+diff --git a/node_modules/@remix-run/dev/compiler.js b/node_modules/@remix-run/dev/compiler.js
+index 95da166..3d7ea97 100644
+--- a/node_modules/@remix-run/dev/compiler.js
++++ b/node_modules/@remix-run/dev/compiler.js
+@@ -359,7 +359,7 @@ const browserSafeRouteExports = {
+   handle: true,
+   links: true,
+   meta: true,
+-  shouldReload: true
++  unstable_shouldReload: true
+ };
+ /**
+  * This plugin loads route modules for the browser build, using module shims

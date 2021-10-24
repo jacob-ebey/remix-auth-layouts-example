@@ -63,8 +63,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: false
-          # tags: registry.fly.io/withered-frost-3196:${{ github.sha }}
+          push: true
+          tags: registry.fly.io/ancient-night-3412:${{ github.sha }}
           build-args: |
             REMIX_TOKEN=${{ secrets.REMIX_TOKEN }}
             COMMIT_SHA=${{ github.sha }}

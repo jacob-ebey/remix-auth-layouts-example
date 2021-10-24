@@ -1,8 +1,13 @@
+import type { HeadersFunction } from "remix";
 import { useLocation, NavLink, Outlet } from "react-router-dom";
 import cn from "classnames";
 
 let tabClassName = ({ isActive }: { isActive: boolean }) =>
   cn("tab tab-bordered tab-lg", isActive && "tab-active");
+
+export let headers: HeadersFunction = () => ({
+  "Cache-Control": "no-store",
+});
 
 export default function AuthLayout() {
   let location = useLocation();

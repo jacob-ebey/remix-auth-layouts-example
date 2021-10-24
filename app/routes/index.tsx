@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import type { IProduct } from "commerce-provider";
 
 import type { RequestContext } from "~/context.server";
+import { swrHeaders } from "~/utils/headers.server";
 import { formatPriceRange } from "~/utils/format";
 
 import type { ProductCardProps } from "~/components/product-card";
@@ -40,14 +41,12 @@ export let loader: LoaderFunction = async ({ context }) => {
 
   return json(result, {
     headers: {
-      "Cache-Control": "stale-while-revalidate, s-maxage=10",
+      "Cache-Control": "stale-while-revalidate, s-maxage=60",
     },
   });
 };
 
-export let headers: HeadersFunction = ({ loaderHeaders }) => {
-  return loaderHeaders;
-};
+export let headers = swrHeaders;
 
 export default function Index() {
   let { products } = useLoaderData<IndexLoaderData>();

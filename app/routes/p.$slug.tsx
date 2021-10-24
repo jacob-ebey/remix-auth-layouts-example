@@ -1,19 +1,21 @@
 import { Fragment } from "react";
-import type { HeadersFunction, LoaderFunction } from "remix";
-import { Form, Link, json, useLoaderData, useTransition } from "remix";
+import type { LoaderFunction } from "remix";
+import { Form, json, useLoaderData, useTransition } from "remix";
 import { Location, To } from "history";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 
 import type { IProductDetails, ISelectedOption } from "commerce-provider";
 
 import type { RequestContext } from "~/context.server";
+import { swrHeaders } from "~/utils/headers.server";
 import { formatPrice, formatPriceRange } from "~/utils/format";
 import { cartSession, CartSessionKeys } from "~/sessions.server";
 
 type PdpLoaderData = {
   addedToCart?: boolean;
   addToCartError?: string;
+  updateCartError?: string;
   productDetails: IProductDetails;
 };
 
@@ -39,25 +41,34 @@ export let loader: LoaderFunction = async ({ context, request, params }) => {
   let result = {
     addedToCart: session.get(CartSessionKeys.addedToCart),
     addToCartError: session.get(CartSessionKeys.addToCartError),
+    updateCartError: session.get(CartSessionKeys.updateCartError),
     productDetails,
   };
 
   return json(result, {
     headers: {
+      "Cache-Control": "stale-while-revalidate, s-maxage=60",
       "Set-Cookie": await cartSession.commitSession(session),
-      "Cache-Control": "max-age=5",
     },
   });
 };
 
-export let headers: HeadersFunction = ({ loaderHeaders }) => {
-  return loaderHeaders;
+export let headers = swrHeaders;
+
+export let cacheKey = async (request: Request) => {
+  let session = await cartSession.getSession(request.headers.get("Cookie"));
+
+  let addedToCart = session.get(CartSessionKeys.addedToCart);
+  let addToCartError = session.get(CartSessionKeys.addToCartError);
+
+  return `addedToCart: ${addedToCart} | addToCartError: ${addToCartError}`;
 };
 
 export default function PDP() {
   let {
     addedToCart,
     addToCartError,
+    updateCartError,
     productDetails: { title, priceRange, images, options, selectedVariant },
   } = useLoaderData<PdpLoaderData>();
 
@@ -73,13 +84,13 @@ export default function PDP() {
       {addedToCart ? (
         <div className="alert alert-success">
           <div className="flex-1">
-            <label>Added to cart!</label>
+            <p>Added to cart!</p>
           </div>
         </div>
-      ) : addToCartError ? (
+      ) : addToCartError || updateCartError ? (
         <div className="alert alert-error">
           <div className="flex-1">
-            <label>{addToCartError}</label>
+            <p>{addToCartError || updateCartError}</p>
           </div>
         </div>
       ) : null}
@@ -116,7 +127,7 @@ export default function PDP() {
             </p>
 
             <div className="mt-6">
-              {options.map((option, index) => (
+              {options.map((option) => (
                 <Fragment key={option.id}>
                   <p>{option.name}:</p>
 
@@ -127,7 +138,6 @@ export default function PDP() {
                   >
                     {option.values.map((value) => (
                       <Link
-                        prefetch="intent"
                         aria-selected={
                           search.get(option.name) === value ? "true" : undefined
                         }

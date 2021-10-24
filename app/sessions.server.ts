@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { promisify } from "util";
 
 import { createCookieSessionStorage, createSessionStorage } from "remix";
 
@@ -19,8 +18,8 @@ export let authSession = createCookieSessionStorage({
 export let CartSessionKeys = {
   addedToCart: "addedToCart",
   addToCartError: "addToCartError",
-  lineItems: "lineItems",
   updateCartError: "updateCartError",
+  lineItems: "lineItems",
 };
 
 export let cartSession = createSessionStorage({
@@ -40,7 +39,14 @@ export let cartSession = createSessionStorage({
       let randomBytes = crypto.randomBytes(8);
       id = "cart-" + Buffer.from(randomBytes).toString("hex");
 
-      if (await redis.exists(id)) {
+      if (
+        await new Promise((resolve, reject) => {
+          redis.exists(id, (error, num) => {
+            if (error) reject(error);
+            else resolve(num);
+          });
+        })
+      ) {
         continue;
       }
 
@@ -96,6 +102,11 @@ export let cartSession = createSessionStorage({
     });
   },
   async deleteData(id) {
-    await redis.del(id);
+    return new Promise<void>((resolve, reject) => {
+      redis.del(id, (error) => {
+        if (error) reject(error);
+        else resolve();
+      });
+    });
   },
 });

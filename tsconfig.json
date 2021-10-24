@@ -1,5 +1,5 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["./remix.env.d.ts", "**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "esModuleInterop": true,
@@ -7,10 +7,12 @@
     "moduleResolution": "node",
     "target": "ES2019",
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
       "commerce-provider": ["./commerce-provider/index"],
-      "commerce-provider/*": ["./commerce-provider/*"]
+      "commerce-provider/*": ["./commerce-provider/*"],
+      "./stale-while-revalidate": ["./stale-while-revalidate/index"]
     },
 
     // Remix takes care of building everything in `remix build`.

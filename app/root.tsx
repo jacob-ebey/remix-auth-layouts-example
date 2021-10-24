@@ -1,5 +1,11 @@
-import type { LoaderFunction, MetaFunction } from "remix";
+import type {
+  LoaderFunction,
+  MetaFunction,
+  Session,
+  ShouldReloadFunction,
+} from "remix";
 import {
+  json,
   Meta,
   Links,
   Scripts,
@@ -13,6 +19,7 @@ import type { ILineItems } from "commerce-provider";
 
 import { cartSession, CartSessionKeys } from "./sessions.server";
 import { requireUserId } from "./utils/auth.server";
+import { swrHeaders } from "./utils/headers.server";
 
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
@@ -33,25 +40,47 @@ type RootLoaderData = {
   year: string;
 };
 
-export let loader: LoaderFunction = async ({
-  request,
-}): Promise<RootLoaderData> => {
+function computeCartCount(session: Session) {
+  let lineItems: ILineItems = session.get(CartSessionKeys.lineItems) || {};
+  return Object.values(lineItems).reduce((count, num) => count + num, 0);
+}
+
+export let loader: LoaderFunction = async ({ request }) => {
   let [userId, session] = await Promise.all([
     requireUserId(request.headers.get("Cookie")),
     cartSession.getSession(request.headers.get("Cookie")),
   ]);
 
-  let lineItems: ILineItems = session.get(CartSessionKeys.lineItems) || {};
-  let cartCount = Object.values(lineItems).reduce(
-    (count, num) => count + num,
-    0
-  );
+  let cartCount = computeCartCount(session);
 
-  return {
+  let result: RootLoaderData = {
     cartCount,
     loggedIn: !!userId,
     year: new Date().getFullYear().toString(),
   };
+
+  return json(result, {
+    headers: {
+      "Cache-Control": "stale-while-revalidate, s-maxage=60",
+    },
+  });
+};
+
+export let headers = swrHeaders;
+
+export let cacheKey = async (request: Request) => {
+  let [userId, session] = await Promise.all([
+    requireUserId(request.headers.get("Cookie")),
+    cartSession.getSession(request.headers.get("Cookie")),
+  ]);
+
+  let cartCount = computeCartCount(session);
+
+  return `loggedIn: ${!!userId} | cartCount: ${cartCount}`;
+};
+
+export let unstable_shouldReload: ShouldReloadFunction = ({ submission }) => {
+  return !!submission?.action;
 };
 
 function Document({

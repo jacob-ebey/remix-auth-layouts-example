@@ -9,12 +9,19 @@ export let action: ActionFunction = async ({ request }) => {
   let formValues = new URLSearchParams(await request.text());
   let redirect = formValues.get("redirect") || "/cart";
   let productVariantId = formValues.get("productVariantId");
+  let needsDelete = false;
+
+  console.log(productVariantId);
 
   if (productVariantId) {
     let { [productVariantId]: _, ...lineItems }: Record<string, number> =
       session.get(CartSessionKeys.lineItems) || {};
 
     session.set(CartSessionKeys.lineItems, lineItems);
+
+    if (!Object.keys(lineItems).length) {
+      needsDelete = true;
+    }
   } else {
     session.flash(
       CartSessionKeys.updateCartError,
@@ -24,7 +31,9 @@ export let action: ActionFunction = async ({ request }) => {
 
   return redirectTo(redirect, {
     headers: {
-      "Set-Cookie": await cartSession.commitSession(session),
+      "Set-Cookie": needsDelete
+        ? await cartSession.destroySession(session)
+        : await cartSession.commitSession(session),
     },
   });
 };

@@ -1,11 +1,15 @@
+import crypto from "crypto";
 import path from "path";
+
 import express from "express";
 import compression from "compression";
-import { createRequestHandler } from "@remix-run/express";
 
 import createShopifyProvider from "./commerce-provider/shopify";
+import type { StaleWhileRevalidateStore } from "./remix/express-swr";
+import { createSwrRequestHandler } from "./remix/express-swr";
 
-import { RequestContext } from "./app/context.server";
+import type { RequestContext } from "./app/context.server";
+import redis from "./app/libs/redis.server";
 
 const MODE = process.env.NODE_ENV;
 const BUILD_DIR = path.join(process.cwd(), "build");
@@ -27,18 +31,51 @@ function getLoadContext(): RequestContext {
   };
 }
 
+let cacheStore: StaleWhileRevalidateStore = {
+  async del(key) {
+    await new Promise<void>((resolve, reject) => {
+      redis.del(key, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  },
+  get(key) {
+    console.log({ key });
+    return new Promise<string | null>((resolve, reject) => {
+      redis.get(key, (err, value) => {
+        if (err) reject(err);
+        else resolve(value);
+      });
+    });
+  },
+  async set(key, value, maxAge) {
+    await new Promise<void>((resolve, reject) => {
+      redis.set(key, value, "EX", maxAge * 2, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  },
+};
+
 app.all(
   "*",
   MODE === "production"
-    ? createRequestHandler({ build: require("./build"), getLoadContext })
+    ? createSwrRequestHandler({
+        build: require("./build"),
+        getLoadContext,
+        store: cacheStore,
+      })
     : (req, res, next) => {
         purgeRequireCache();
         let build = require("./build");
-        return createRequestHandler({ build, getLoadContext, mode: MODE })(
-          req,
-          res,
-          next
-        );
+        return createSwrRequestHandler({
+          build,
+          getLoadContext,
+          mode: MODE,
+          store: cacheStore,
+        })(req, res, next);
       }
 );
 

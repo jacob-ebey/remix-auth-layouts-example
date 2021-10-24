@@ -11,6 +11,8 @@ import { formatPrice } from "~/utils/format";
 import CartLineItem, { CartLineItemProps } from "~/components/cart-line-item";
 
 type CartLoaderData = {
+  addToCartError?: string;
+  updateCartError?: string;
   cart: Omit<ICart, "lineItems"> & {
     lineItems: CartLineItemProps[];
   };
@@ -25,7 +27,10 @@ export let loader: LoaderFunction = async ({ context, request }) => {
 
   let count = Object.values(lineItems).reduce((r, c) => r + c, 0);
 
-  session.get(CartSessionKeys.updateCartError);
+  // Read to clear out value for other routes if we are redirected here
+  session.get(CartSessionKeys.addedToCart);
+  let addToCartError = session.get(CartSessionKeys.addToCartError);
+  let updateCartError = session.get(CartSessionKeys.updateCartError);
 
   if (count <= 0) {
     throw new Response(null, { status: 404 });
@@ -34,6 +39,8 @@ export let loader: LoaderFunction = async ({ context, request }) => {
   let cart = await commerce.cartFromLineItems(lineItems);
 
   let result: CartLoaderData = {
+    addToCartError,
+    updateCartError,
     cart: {
       ...cart,
       lineItems: cart.lineItems.map((lineItem) => ({
@@ -49,45 +56,63 @@ export let loader: LoaderFunction = async ({ context, request }) => {
     },
   };
 
-  return json(result);
+  return json(result, {
+    headers: {
+      "Cache-Control": "no-store",
+      "Set-Cookie": await cartSession.commitSession(session),
+    },
+  });
 };
 
 export default function Cart() {
-  let { cart } = useLoaderData<CartLoaderData>();
+  let { addToCartError, updateCartError, cart } =
+    useLoaderData<CartLoaderData>();
 
   return (
-    <section className="min-h-screen">
-      <div className="flex justify-center my-6">
-        <div className="flex flex-col w-full p-8 bg-base-200 shadow-lg pin-r pin-y md:w-4/5 lg:w-4/5">
+    <>
+      {addToCartError || updateCartError ? (
+        <div className="alert alert-error">
           <div className="flex-1">
-            <h1 className="mb-6 text-4xl font-semibold">Cart</h1>
-            <table className="w-full text-sm lg:text-base" cellSpacing="0">
-              <thead>
-                <tr className="h-12 uppercase">
-                  <th className="hidden md:table-cell"></th>
-                  <th className="text-left">Product</th>
-                  <th className="lg:text-right text-left pl-5 lg:pl-0">
-                    <span className="lg:hidden" title="Quantity">
-                      Qtd
-                    </span>
-                    <span className="hidden lg:inline">Quantity</span>
-                  </th>
-                  <th className="hidden text-right md:table-cell">
-                    Unit price
-                  </th>
-                  <th className="text-right">Total price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cart.lineItems.map((lineItem) => (
-                  <CartLineItem {...lineItem} key={lineItem.productVariantId} />
-                ))}
-              </tbody>
-            </table>
+            <p>{addToCartError || updateCartError}</p>
           </div>
         </div>
-      </div>
-    </section>
+      ) : null}
+      <section className="min-h-screen">
+        <div className="flex justify-center my-6">
+          <div className="flex flex-col w-full p-8 bg-base-200 shadow-lg pin-r pin-y md:w-4/5 lg:w-4/5">
+            <div className="flex-1">
+              <h1 className="mb-6 text-4xl font-semibold">Cart</h1>
+              <table className="w-full text-sm lg:text-base" cellSpacing="0">
+                <thead>
+                  <tr className="h-12 uppercase">
+                    <th className="hidden md:table-cell"></th>
+                    <th className="text-left">Product</th>
+                    <th className="lg:text-right text-left pl-5 lg:pl-0">
+                      <span className="lg:hidden" title="Quantity">
+                        Qtd
+                      </span>
+                      <span className="hidden lg:inline">Quantity</span>
+                    </th>
+                    <th className="hidden text-right md:table-cell">
+                      Unit price
+                    </th>
+                    <th className="text-right">Total price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cart.lineItems.map((lineItem) => (
+                    <CartLineItem
+                      {...lineItem}
+                      key={lineItem.productVariantId}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
