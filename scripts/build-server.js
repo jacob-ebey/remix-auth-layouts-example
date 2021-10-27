@@ -19,6 +19,7 @@ esbuild
         setup(build) {
           build.onResolve({ filter: /.*/ }, (args) => {
             if (
+              args.path === "./build" ||
               (!args.path.startsWith("commerce-provider") &&
                 !args.path.startsWith(".") &&
                 !args.path.startsWith("/")) ||
