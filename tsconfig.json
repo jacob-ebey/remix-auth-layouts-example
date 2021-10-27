@@ -10,8 +10,6 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
-      "commerce-provider": ["./commerce-provider/index"],
-      "commerce-provider/*": ["./commerce-provider/*"],
       "./stale-while-revalidate": ["./stale-while-revalidate/index"]
     },
 

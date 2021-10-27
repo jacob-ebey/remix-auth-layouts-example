@@ -1,7 +1,6 @@
 let path = require("path");
 
 let esbuild = require("esbuild");
-const { nodeExternalsPlugin } = require("esbuild-node-externals");
 
 let basePath = process.cwd();
 
@@ -10,20 +9,27 @@ esbuild
     write: true,
     outfile: path.join(basePath, "server.js"),
     entryPoints: [path.join(basePath, "server.ts")],
+    sourcemap: "inline",
     platform: "node",
     format: "cjs",
     bundle: true,
     plugins: [
-      nodeExternalsPlugin({
-        packagePath: path.join(basePath, "package.json"),
-      }),
       {
         name: "remix-bundle-external",
         setup(build) {
-          build.onResolve({ filter: /^\.\/build$/ }, ({ path, resolveDir }) => {
-            return {
-              external: true,
-            };
+          build.onResolve({ filter: /.*/ }, (args) => {
+            if (
+              (!args.path.startsWith("commerce-provider") &&
+                !args.path.startsWith(".") &&
+                !args.path.startsWith("/")) ||
+              args.path.includes("node_modules") ||
+              args.resolveDir.includes("node_modules") ||
+              args.importer.includes("node_modules")
+            ) {
+              return {
+                external: true,
+              };
+            }
           });
         },
       },

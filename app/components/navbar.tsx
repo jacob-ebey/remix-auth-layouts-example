@@ -41,13 +41,21 @@ export default function Navbar({
             <Link to="/profile">Profile</Link>
           </div>
           <Form method="post" action={logoutAction} className="px-2 mx-2">
-            <button type="submit">Logout</button>
+            <button data-testid="logout" type="submit">
+              Logout
+            </button>
           </Form>
         </>
-      ) : null}
+      ) : (
+        <div className="px-2 mx-2">
+          <Link data-testid="login" to="/login">
+            Login
+          </Link>
+        </div>
+      )}
       <div className="px-2 mx-2">
         <Link to="/cart" className="flex flex-nowrap text-current">
-          ({cartCount})
+          <span data-testid="cartCount">({cartCount})</span>
           <svg
             className="w-6 h-6 ml-2"
             viewBox="0 0 36 36"

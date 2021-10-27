@@ -84,7 +84,7 @@ export default function PDP() {
       {addedToCart ? (
         <div className="alert alert-success">
           <div className="flex-1">
-            <p>Added to cart!</p>
+            <p data-testid="addToCartSuccess">Added to cart!</p>
           </div>
         </div>
       ) : addToCartError || updateCartError ? (
@@ -169,6 +169,7 @@ export default function PDP() {
                   value={selectedVariant?.id || ""}
                 />
                 <button
+                  data-testid="addToCart"
                   type="submit"
                   disabled={addToCartDisabled}
                   className="btn btn-accent"

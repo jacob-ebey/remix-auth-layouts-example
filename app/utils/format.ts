@@ -1,4 +1,4 @@
-import { IMoney, IMoneyRange } from "commerce-provider";
+import type { IMoney, IMoneyRange } from "commerce-provider";
 
 let currencyMap: Map<string, [string, number]> = new Map([
   ["CAD", ["$", 2]],

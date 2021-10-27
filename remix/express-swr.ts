@@ -20,37 +20,16 @@ import {
 import { createRemixRequest } from "@remix-run/express/server";
 import parseCacheControlHeader from "parse-cache-control";
 
+declare module "@remix-run/server-runtime/routeModules" {
+  interface ServerRouteModule {
+    cacheKey?: (request: Request) => Promise<string | null> | string | null;
+  }
+}
+
 declare module "parse-cache-control" {
   interface Header {
     "s-maxage"?: string;
     "stale-while-revalidate"?: boolean;
-  }
-}
-
-function getMaxAge(cacheControlHeader: string | null) {
-  let cacheControl =
-    cacheControlHeader && parseCacheControlHeader(cacheControlHeader);
-
-  let maxAge: number | undefined = undefined;
-  if (
-    cacheControl &&
-    !cacheControl["no-store"] &&
-    cacheControl["stale-while-revalidate"]
-  ) {
-    let smaxage = cacheControl["s-maxage"];
-    if (typeof smaxage !== "undefined") {
-      maxAge =
-        typeof smaxage === "string" ? Number.parseInt(smaxage, 10) : smaxage;
-    } else if (typeof cacheControl["max-age"] !== "undefined") {
-      maxAge = cacheControl["max-age"];
-    }
-  }
-  return maxAge;
-}
-
-declare module "@remix-run/server-runtime/routeModules" {
-  interface ServerRouteModule {
-    cacheKey?: (request: Request) => Promise<string | null> | string | null;
   }
 }
 
@@ -83,6 +62,27 @@ export type StaleWhileRevalidateStore = {
 };
 
 type CacheStatus = "HIT" | "STALE" | "MISS" | "BYPASS" | "REVALIDATED";
+
+function getMaxAge(cacheControlHeader: string | null) {
+  let cacheControl =
+    cacheControlHeader && parseCacheControlHeader(cacheControlHeader);
+
+  let maxAge: number | undefined = undefined;
+  if (
+    cacheControl &&
+    !cacheControl["no-store"] &&
+    cacheControl["stale-while-revalidate"]
+  ) {
+    let smaxage = cacheControl["s-maxage"];
+    if (typeof smaxage !== "undefined") {
+      maxAge =
+        typeof smaxage === "string" ? Number.parseInt(smaxage, 10) : smaxage;
+    } else if (typeof cacheControl["max-age"] !== "undefined") {
+      maxAge = cacheControl["max-age"];
+    }
+  }
+  return maxAge;
+}
 
 async function cacheKeyFromRequest(
   request: Request,

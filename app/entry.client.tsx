@@ -3,6 +3,8 @@ import { RemixBrowser } from "remix";
 
 ReactDOM.hydrate(<RemixBrowser />, document);
 
+(window as any).reactIsHydrated = true;
+
 if (process.env.NODE_ENV === "development") {
   let ogFetch = fetch;
   window.fetch = async function fetchDevWrapped() {

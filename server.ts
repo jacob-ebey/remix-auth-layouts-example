@@ -4,7 +4,7 @@ import path from "path";
 import express from "express";
 import compression from "compression";
 
-import createShopifyProvider from "./commerce-provider/shopify";
+import createShopifyProvider from "commerce-provider/shopify";
 import type { StaleWhileRevalidateStore } from "./remix/express-swr";
 import { createSwrRequestHandler } from "./remix/express-swr";
 
@@ -31,7 +31,7 @@ function getLoadContext(): RequestContext {
   };
 }
 
-let swrStore: StaleWhileRevalidateStore = {
+export let swrStore: StaleWhileRevalidateStore = {
   async del(key) {
     await new Promise<void>((resolve, reject) => {
       redis.del("swr-" + key, (err) => {
@@ -78,10 +78,16 @@ app.all(
       }
 );
 
-let port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Express server listening on port ${port}`);
-});
+if (require.main === module) {
+  let port = process.env.PORT || 3000;
+  let server = app.listen(port, () => {
+    console.log(`Express server listening on port ${port}`);
+  });
+
+  console.log({ ADDRESS: server.address() });
+}
+
+export default app;
 
 ////////////////////////////////////////////////////////////////////////////////
 function purgeRequireCache() {

@@ -142,6 +142,7 @@ export default function Signup() {
             <span className="label-text">First name</span>
           </label>
           <input
+            required
             name="firstName"
             id="firstName"
             type="text"
@@ -166,6 +167,7 @@ export default function Signup() {
             <span className="label-text">Email</span>
           </label>
           <input
+            required
             name="email"
             id="email"
             type="email"
@@ -186,6 +188,7 @@ export default function Signup() {
             <span className="label-text">Password</span>
           </label>
           <input
+            required
             name="password"
             id="password"
             type="password"
@@ -208,6 +211,7 @@ export default function Signup() {
             <span className="label-text">Verify password</span>
           </label>
           <input
+            required
             name="verifyPassword"
             id="verifyPassword"
             type="password"
@@ -246,7 +250,7 @@ export default function Signup() {
             className="btn btn-primary"
             disabled={signingUp}
           >
-            Login
+            Signup
           </button>
         </div>
       </div>
